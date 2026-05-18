@@ -45,7 +45,7 @@ export default function RootLayout({
     >
       <body className="font-sans">
         <ConvexClientProvider>
-          <div className="mx-auto max-w-screen-md min-h-screen pb-24">
+          <div className="mx-auto max-w-screen-md pb-20">
             {children}
           </div>
           <BottomNav />
