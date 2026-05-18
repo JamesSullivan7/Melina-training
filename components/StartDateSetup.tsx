@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { LogoCompact } from "./Logo";
+import { BrandBanner } from "./Logo";
 
 function nextMonday(): string {
   const d = new Date();
@@ -38,18 +38,13 @@ export function StartDateSetup() {
   })();
 
   return (
-    <div className="px-3 pt-6 pb-4">
-      <header className="flex items-center gap-2 mb-6">
-        <LogoCompact size="hero" />
-      </header>
+    <div className="px-3 pt-5 pb-4">
+      <BrandBanner className="mb-6" />
 
-      <div className="mb-5">
+      <div className="mb-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
           Welcome
         </p>
-        <h1 className="display text-5xl font-bold leading-[0.92] mt-1">
-          Build a base.
-        </h1>
       </div>
 
       <p className="text-sm text-ink-muted leading-relaxed mb-6 max-w-sm">

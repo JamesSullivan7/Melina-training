@@ -5,7 +5,7 @@ import { Settings as SettingsIcon, ArrowRight, Flame } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { LogoCompact } from "@/components/Logo";
+import { BrandBanner, LogoCompact } from "@/components/Logo";
 import { ProgressRing } from "@/components/ProgressRing";
 import { StartDateSetup } from "@/components/StartDateSetup";
 import { computeCoord, DAY_NAMES } from "@/lib/programDate";
@@ -58,25 +58,25 @@ export default function HomePage() {
 
   return (
     <div className="px-3 pt-4 pb-4">
-      {/* Header */}
-      <header className="flex items-start justify-between mb-4 gap-3">
-        <LogoCompact size="hero" />
-        <div className="flex items-center gap-2 pt-1 shrink-0">
-          <ProgressRing
-            value={completionPct}
-            size={56}
-            stroke={6}
-            label={`${Math.round(completionPct * 100)}%`}
-            sub="today"
-          />
-          <Link
-            href="/settings"
-            className="h-9 w-9 rounded-lg flex items-center justify-center bg-bg-elev tap"
-            aria-label="Settings"
-          >
-            <SettingsIcon size={18} />
-          </Link>
-        </div>
+      {/* Brand banner */}
+      <BrandBanner className="mb-3" />
+
+      {/* Controls row */}
+      <header className="flex items-center justify-between mb-4 gap-3">
+        <ProgressRing
+          value={completionPct}
+          size={48}
+          stroke={5}
+          label={`${Math.round(completionPct * 100)}%`}
+          sub="today"
+        />
+        <Link
+          href="/settings"
+          className="h-9 w-9 rounded-lg flex items-center justify-center bg-bg-elev tap"
+          aria-label="Settings"
+        >
+          <SettingsIcon size={18} />
+        </Link>
       </header>
 
       {/* Title */}

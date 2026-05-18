@@ -30,6 +30,27 @@ export function TTMark({
 }
 
 /**
+ * Wide brand banner — T mark + "TULSA TRAINING" on one line, centered.
+ * Used at the top of welcome and dashboard so the brand spans the
+ * full mobile width.
+ */
+export function BrandBanner({ className }: { className?: string }) {
+  return (
+    <div
+      className={cx(
+        "w-full flex items-center justify-center gap-3 py-1",
+        className,
+      )}
+    >
+      <TTMark size={56} priority />
+      <span className="display font-bold tracking-tight text-ink text-[40px] leading-none">
+        TULSA TRAINING
+      </span>
+    </div>
+  );
+}
+
+/**
  * Compact logo lockup for tight headers/nav: the real t mark beside a
  * stacked "TULSA / TRAINING" rendered in the display font (white).
  */
