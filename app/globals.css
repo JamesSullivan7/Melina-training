@@ -1,26 +1,187 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Tulsa Training — Hybrid Athlete design tokens.
+   Ported from JamesSullivan7/Hybrid-Athlete-app and adapted
+   to Tailwind v4's @theme inline syntax.
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+
+  /* surfaces */
+  --tt-bg: #000000;
+  --tt-bg-surface: #0a0a0b;
+  --tt-bg-elev: #141414;
+  --tt-bg-card: #0c0c0c;
+  --tt-bg-line: #202020;
+
+  /* text */
+  --tt-ink: #ffffff;
+  --tt-ink-muted: #9a9a9a;
+  --tt-ink-dim: #5d5d5d;
+
+  /* brand */
+  --tt-brand: #d93b58;
+  --tt-brand-600: #c8324d;
+  --tt-brand-700: #a82a40;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--tt-bg);
+  --color-foreground: var(--tt-ink);
+
+  --color-bg: var(--tt-bg);
+  --color-bg-surface: var(--tt-bg-surface);
+  --color-bg-elev: var(--tt-bg-elev);
+  --color-bg-card: var(--tt-bg-card);
+  --color-bg-line: var(--tt-bg-line);
+
+  --color-ink: var(--tt-ink);
+  --color-ink-muted: var(--tt-ink-muted);
+  --color-ink-dim: var(--tt-ink-dim);
+
+  --color-brand: var(--tt-brand);
+  --color-brand-600: var(--tt-brand-600);
+  --color-brand-700: var(--tt-brand-700);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background-color: var(--tt-bg);
+  color: var(--tt-ink);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  padding-bottom: env(safe-area-inset-bottom);
+  overscroll-behavior-y: none;
+  background-image:
+    radial-gradient(1100px 540px at 50% -180px, rgba(217, 59, 88, 0.10), transparent 62%),
+    radial-gradient(700px 360px at 100% 100%, rgba(140, 35, 54, 0.06), transparent 60%),
+    linear-gradient(180deg, #000000 0%, #000000 100%);
+  background-attachment: fixed;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .tap { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .display {
+    font-family: var(--font-display), Impact, Anton, system-ui, sans-serif;
+    letter-spacing: 0.02em;
+  }
+  .ultra { letter-spacing: 0.18em; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .grad-card {
+    background: linear-gradient(180deg, #141414 0%, #0c0c0c 100%);
+  }
+}
+
+@layer components {
+  .card {
+    background-color: var(--tt-bg-card);
+    border: 1px solid var(--tt-bg-line);
+    border-radius: 1rem;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.025) inset,
+      0 14px 30px -16px rgba(0, 0, 0, 0.85);
+  }
+  .card-elev {
+    background-color: var(--tt-bg-surface);
+    border: 1px solid var(--tt-bg-line);
+    border-radius: 1rem;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.035) inset,
+      0 20px 40px -20px rgba(0, 0, 0, 0.9);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: all 0.15s ease;
+  }
+  .btn-primary {
+    background-color: var(--tt-brand);
+    color: white;
+    box-shadow:
+      0 0 0 1px rgba(217, 59, 88, 0.22),
+      0 10px 30px -10px rgba(217, 59, 88, 0.6);
+  }
+  .btn-primary:hover { background-color: var(--tt-brand-600); }
+  .btn-primary:active { background-color: var(--tt-brand-700); }
+  .btn-ghost {
+    color: var(--tt-ink-muted);
+  }
+  .btn-ghost:hover {
+    color: var(--tt-ink);
+    background-color: var(--tt-bg-elev);
+  }
+  .btn-outline {
+    border: 1px solid var(--tt-bg-line);
+    color: var(--tt-ink);
+  }
+  .btn-outline:hover {
+    background-color: var(--tt-bg-elev);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .section-head {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--tt-ink-muted);
+    font-family: var(--font-display), Impact, system-ui, sans-serif;
+  }
+  .num-input {
+    width: 100%;
+    text-align: center;
+    background-color: var(--tt-bg);
+    border: 1px solid var(--tt-bg-line);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--tt-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .num-input:focus {
+    outline: none;
+    border-color: var(--tt-brand);
+    box-shadow: 0 0 0 1px rgba(217, 59, 88, 0.4);
+  }
+  .h-display {
+    font-family: var(--font-display), Impact, Anton, system-ui, sans-serif;
+    letter-spacing: 0.02em;
+    line-height: 0.95;
+  }
 }

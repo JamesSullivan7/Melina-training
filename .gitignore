@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local Claude Code config
+/.claude
+/.agents
+skills-lock.json
+
+# Convex AI agent state
+convex/_generated/ai/*.state.json
