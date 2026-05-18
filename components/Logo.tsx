@@ -38,12 +38,12 @@ export function BrandBanner({ className }: { className?: string }) {
   return (
     <div
       className={cx(
-        "w-full flex flex-col items-center gap-2 py-2",
+        "relative w-full flex items-center py-2 min-h-[112px]",
         className,
       )}
     >
-      <TTMark size={112} priority />
-      <span className="display font-bold tracking-tight text-ink text-[40px] leading-none">
+      <TTMark size={112} priority className="relative z-10" />
+      <span className="absolute left-0 right-0 text-center display font-bold tracking-tight text-ink text-[40px] leading-none pointer-events-none">
         TULSA TRAINING
       </span>
     </div>
