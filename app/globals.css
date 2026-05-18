@@ -9,17 +9,17 @@
 :root {
   color-scheme: dark;
 
-  /* surfaces */
+  /* surfaces — increased lightness for visible separation on OLED */
   --tt-bg: #000000;
-  --tt-bg-surface: #0a0a0b;
-  --tt-bg-elev: #141414;
-  --tt-bg-card: #0c0c0c;
-  --tt-bg-line: #202020;
+  --tt-bg-surface: #161616;
+  --tt-bg-elev: #262626;
+  --tt-bg-card: #1a1a1a;
+  --tt-bg-line: #3a3a3a;
 
   /* text */
   --tt-ink: #ffffff;
-  --tt-ink-muted: #9a9a9a;
-  --tt-ink-dim: #5d5d5d;
+  --tt-ink-muted: #b5b5b5;
+  --tt-ink-dim: #7a7a7a;
 
   /* brand */
   --tt-brand: #d93b58;
