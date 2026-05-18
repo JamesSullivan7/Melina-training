@@ -4,33 +4,47 @@ import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
-import { HeartPulse } from "lucide-react";
+import { HeartPulse, ChevronRight } from "lucide-react";
 import { computeReadiness, type Readiness } from "@/lib/readiness";
 import { cx } from "@/lib/utils";
 
 const STYLE: Record<
   Readiness,
-  { dot: string; chip: string; label: string }
+  {
+    label: string;
+    border: string;
+    icon: string;
+    chip: string;
+    msg: string;
+  }
 > = {
   green: {
-    dot: "bg-emerald-400",
-    chip: "bg-emerald-500/10 border-emerald-500/40 text-emerald-300",
     label: "READY",
+    border: "border-emerald-500/50",
+    icon: "text-emerald-400",
+    chip: "bg-emerald-500/15 border-emerald-500/40 text-emerald-300",
+    msg: "text-emerald-300",
   },
   yellow: {
-    dot: "bg-amber-400",
-    chip: "bg-amber-500/10 border-amber-500/40 text-amber-300",
     label: "MANAGE",
+    border: "border-amber-500/50",
+    icon: "text-amber-400",
+    chip: "bg-amber-500/15 border-amber-500/40 text-amber-300",
+    msg: "text-amber-300",
   },
   red: {
-    dot: "bg-red-400",
-    chip: "bg-red-500/10 border-red-500/40 text-red-300",
     label: "RECOVER",
+    border: "border-red-500/50",
+    icon: "text-red-400",
+    chip: "bg-red-500/15 border-red-500/40 text-red-300",
+    msg: "text-red-300",
   },
   unknown: {
-    dot: "bg-ink-dim",
-    chip: "bg-bg-elev border-bg-line text-ink-muted",
     label: "—",
+    border: "border-emerald-500/40",
+    icon: "text-emerald-400",
+    chip: "bg-emerald-500/10 border-emerald-500/30 text-emerald-300",
+    msg: "text-emerald-300",
   },
 };
 
@@ -40,39 +54,39 @@ export function ReadinessCard() {
     | null
     | undefined;
 
-  if (recent === undefined) return null; // loading — keep dashboard layout stable
+  if (recent === undefined) return null;
 
   const signal = computeReadiness(recent);
   const s = STYLE[signal.level];
 
+  const headline =
+    signal.level === "unknown"
+      ? "No readiness logged — proceed as planned."
+      : signal.message;
+
   return (
     <Link
       href="/recovery"
-      className="card p-2.5 mb-2 flex items-center gap-2.5 tap"
+      className={cx(
+        "card p-3 mb-2 flex items-center gap-3 tap border-2",
+        s.border,
+      )}
     >
-      <span
-        className={cx("h-2.5 w-2.5 rounded-full shrink-0", s.dot)}
-        aria-hidden
-      />
+      <HeartPulse size={20} className={cx("shrink-0", s.icon)} />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase tracking-wider text-ink-muted">
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-[10px] uppercase tracking-wider text-ink-muted font-semibold">
             Readiness
           </span>
-          <span
-            className={cx(
-              "chip border",
-              s.chip,
-            )}
-          >
-            {s.label}
-          </span>
+          {signal.level !== "unknown" && (
+            <span className={cx("chip border", s.chip)}>{s.label}</span>
+          )}
         </div>
-        <p className="text-[12px] text-ink leading-snug mt-0.5 truncate">
-          {signal.message}
+        <p className={cx("text-[13px] leading-snug", s.msg)}>
+          {headline}
         </p>
       </div>
-      <HeartPulse size={16} className="text-ink-muted shrink-0" />
+      <ChevronRight size={16} className="text-ink-muted shrink-0" />
     </Link>
   );
 }
