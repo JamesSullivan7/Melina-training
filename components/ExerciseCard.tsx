@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Plus, NotebookPen } from "lucide-react";
+import { ChevronDown, ChevronUp, NotebookPen } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
@@ -96,27 +96,6 @@ export function ExerciseCard({
     save(next);
   };
 
-  const addSet = () => {
-    const next: SetLog[] = [
-      ...sets,
-      {
-        setNumber: sets.length + 1,
-        weight: sets[sets.length - 1]?.weight,
-        reps: sets[sets.length - 1]?.reps,
-        rpe: undefined,
-        completed: false,
-      },
-    ];
-    save(next);
-  };
-
-  const removeSet = (setNumber: number) => {
-    const next = sets
-      .filter((s) => s.setNumber !== setNumber)
-      .map((s, i) => ({ ...s, setNumber: i + 1 }));
-    save(next);
-  };
-
   const updateNotes = (val: string) => {
     save(sets, val);
   };
@@ -177,19 +156,10 @@ export function ExerciseCard({
               units={units}
               prevSet={prev[idx] as SetLog | undefined}
               onChange={(patch) => updateSet(s.setNumber, patch)}
-              onRemove={() => removeSet(s.setNumber)}
-              canRemove={sets.length > 1}
             />
           ))}
 
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              type="button"
-              onClick={addSet}
-              className="btn btn-outline text-xs flex-1 py-2"
-            >
-              <Plus size={14} /> add set
-            </button>
+          <div className="flex justify-end pt-1">
             <button
               type="button"
               onClick={() => setShowNotes((v) => !v)}
@@ -200,6 +170,7 @@ export function ExerciseCard({
               aria-label="Toggle notes"
             >
               <NotebookPen size={14} />
+              {showNotes ? "hide notes" : "notes"}
             </button>
           </div>
 
