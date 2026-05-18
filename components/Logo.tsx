@@ -42,7 +42,7 @@ export function BrandBanner({ className }: { className?: string }) {
         className,
       )}
     >
-      <TTMark size={56} priority />
+      <TTMark size={112} priority />
       <span className="display font-bold tracking-tight text-ink text-[40px] leading-none">
         TULSA TRAINING
       </span>
