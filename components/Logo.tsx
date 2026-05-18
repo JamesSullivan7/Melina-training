@@ -38,7 +38,7 @@ export function BrandBanner({ className }: { className?: string }) {
   return (
     <div
       className={cx(
-        "w-full flex items-center justify-center gap-3 py-1",
+        "w-full flex flex-col items-center gap-2 py-2",
         className,
       )}
     >
