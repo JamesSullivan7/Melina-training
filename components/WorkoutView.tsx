@@ -173,9 +173,10 @@ export function WorkoutView({
         })}
       </div>
 
-      {/* Bottom action */}
+      {/* Bottom action — goes to the Recovery log */}
       <div className="mt-6 flex gap-2 pb-2">
-        <button
+        <Link
+          href="/recovery"
           className={cx(
             "btn flex-1",
             overallPct >= 1 ? "btn-primary" : "btn-outline",
@@ -183,7 +184,7 @@ export function WorkoutView({
         >
           <CheckCircle2 size={16} />
           {overallPct >= 1 ? "Complete workout" : "Save & finish"}
-        </button>
+        </Link>
       </div>
 
       <div className="text-[10px] text-ink-dim text-center mt-2">
