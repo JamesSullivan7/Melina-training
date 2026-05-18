@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { BrandBanner, LogoCompact } from "@/components/Logo";
 import { ProgressRing } from "@/components/ProgressRing";
+import { ReadinessCard } from "@/components/ReadinessCard";
 import { StartDateSetup } from "@/components/StartDateSetup";
 import { computeCoord, DAY_NAMES } from "@/lib/programDate";
 import { cx } from "@/lib/utils";
@@ -78,6 +79,9 @@ export default function HomePage() {
           <SettingsIcon size={18} />
         </Link>
       </header>
+
+      {/* Readiness traffic light */}
+      <ReadinessCard />
 
       {/* Today's workout (phase info folded in) */}
       {coord.isRestDay ? (

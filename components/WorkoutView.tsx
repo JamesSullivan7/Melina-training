@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Heart, Pencil, Check, X } from "lucide-react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -9,6 +10,7 @@ import type { Doc } from "@/convex/_generated/dataModel";
 import type { Exercise, Section as ProgramSection } from "@/convex/types";
 import { TTMark } from "./Logo";
 import { ExerciseCard } from "./ExerciseCard";
+import { RestTimerProvider } from "./RestTimerContext";
 import { cx } from "@/lib/utils";
 
 type Day = Doc<"programDays">;
@@ -75,6 +77,7 @@ export function WorkoutView({
   }, [day, logByExId]);
 
   return (
+    <RestTimerProvider>
     <div className="px-3 pt-3 pb-4">
       {/* Header */}
       <header className="flex items-center gap-2 mb-3">
@@ -173,23 +176,63 @@ export function WorkoutView({
         })}
       </div>
 
-      {/* Bottom action — goes to the Recovery log */}
-      <div className="mt-6 flex gap-2 pb-2">
-        <Link
-          href="/recovery"
-          className={cx(
-            "btn flex-1",
-            overallPct >= 1 ? "btn-primary" : "btn-outline",
-          )}
-        >
-          <CheckCircle2 size={16} />
-          {overallPct >= 1 ? "Complete workout" : "Save & finish"}
-        </Link>
-      </div>
+      {/* Bottom action — auto-marks complete when all sets done */}
+      <CompleteButton
+        ready={overallPct >= 1}
+        week={day.week}
+        dayOfWeek={day.dayOfWeek}
+        dateISO={dateISO}
+      />
 
       <div className="text-[10px] text-ink-dim text-center mt-2">
         {totalSets} sets total · log via the cards above
       </div>
+    </div>
+    </RestTimerProvider>
+  );
+}
+
+function CompleteButton({
+  ready,
+  week,
+  dayOfWeek,
+  dateISO,
+}: {
+  ready: boolean;
+  week: number;
+  dayOfWeek: number;
+  dateISO: string;
+}) {
+  const router = useRouter();
+  const markCompleted = useMutation(api.dailyLogs.markCompleted);
+  const [working, setWorking] = useState(false);
+
+  async function finish() {
+    setWorking(true);
+    if (ready) {
+      await markCompleted({ date: dateISO, week, dayOfWeek });
+    }
+    router.push("/recovery");
+  }
+
+  return (
+    <div className="mt-6 flex gap-2 pb-2">
+      <button
+        type="button"
+        onClick={finish}
+        disabled={working}
+        className={cx(
+          "btn flex-1 disabled:opacity-50",
+          ready ? "btn-primary" : "btn-outline",
+        )}
+      >
+        <CheckCircle2 size={16} />
+        {working
+          ? "Saving…"
+          : ready
+            ? "Complete workout"
+            : "Save & finish"}
+      </button>
     </div>
   );
 }
@@ -258,6 +301,7 @@ function SectionBlock({
             exercise={ex}
             log={logByExId.get(ex.id) ?? null}
             prevLog={prevByExId.get(ex.id) ?? null}
+            restSeconds={section.restSeconds ?? 90}
             date={date}
             week={week}
             dayOfWeek={dayOfWeek}

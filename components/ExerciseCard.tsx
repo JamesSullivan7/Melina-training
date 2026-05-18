@@ -53,6 +53,7 @@ export function ExerciseCard({
   week,
   dayOfWeek,
   units = "lb",
+  restSeconds = 90,
 }: {
   exercise: Exercise;
   log: Log | null;
@@ -61,6 +62,7 @@ export function ExerciseCard({
   week: number;
   dayOfWeek: number;
   units?: Units;
+  restSeconds?: number;
 }) {
   const upsert = useMutation(api.exerciseLogs.upsert);
 
@@ -156,6 +158,7 @@ export function ExerciseCard({
               units={units}
               prevSet={prev[idx] as SetLog | undefined}
               onChange={(patch) => updateSet(s.setNumber, patch)}
+              restSeconds={restSeconds}
             />
           ))}
 

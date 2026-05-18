@@ -3,6 +3,7 @@
 import { Check, Trash2 } from "lucide-react";
 import { cx } from "@/lib/utils";
 import { NumberStepper } from "./NumberStepper";
+import { useRestTimer } from "./RestTimerContext";
 import type { Exercise, TrackingType } from "@/convex/types";
 
 export type SetLog = {
@@ -26,6 +27,7 @@ export function SetRow({
   onChange,
   onRemove,
   canRemove,
+  restSeconds = 90,
 }: {
   set: SetLog;
   exercise: Exercise;
@@ -34,11 +36,25 @@ export function SetRow({
   onChange: (patch: Partial<SetLog>) => void;
   onRemove?: () => void;
   canRemove?: boolean;
+  restSeconds?: number;
 }) {
   const t = exercise.trackingType;
   const completed = set.completed;
+  const timer = useRestTimer();
 
-  const toggleComplete = () => onChange({ completed: !completed });
+  const toggleComplete = () => {
+    const wasCompleted = completed;
+    onChange({ completed: !wasCompleted });
+    // Trigger rest timer only on transition incomplete → complete,
+    // and only for trackable training types (skip warmups / check items).
+    if (
+      !wasCompleted &&
+      exercise.trackingType !== "check" &&
+      exercise.trackingType !== "timed_hold"
+    ) {
+      timer.start(restSeconds, exercise.name);
+    }
+  };
 
   return (
     <div
