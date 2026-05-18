@@ -38,7 +38,7 @@ export function BrandBanner({ className }: { className?: string }) {
   return (
     <div
       className={cx(
-        "relative w-full flex items-center py-2 min-h-[112px]",
+        "relative w-full flex items-center",
         className,
       )}
     >

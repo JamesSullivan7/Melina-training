@@ -38,8 +38,8 @@ export function StartDateSetup() {
   })();
 
   return (
-    <div className="px-3 pt-5 pb-4">
-      <BrandBanner className="mb-6" />
+    <div className="px-3 pt-1 pb-4">
+      <BrandBanner className="mb-3" />
 
       <div className="mb-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-muted">

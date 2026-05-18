@@ -57,12 +57,12 @@ export default function HomePage() {
   })();
 
   return (
-    <div className="px-3 pt-4 pb-4">
+    <div className="px-3 pt-1 pb-4">
       {/* Brand banner */}
-      <BrandBanner className="mb-3" />
+      <BrandBanner className="mb-1" />
 
       {/* Controls row */}
-      <header className="flex items-center justify-between mb-4 gap-3">
+      <header className="flex items-center justify-between mb-3 gap-3">
         <ProgressRing
           value={completionPct}
           size={48}
