@@ -169,21 +169,21 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Compact stats row */}
-      <div className="flex items-center justify-between gap-2 mt-2 px-1 text-[11px] text-ink-muted">
-        <div className="flex items-center gap-1.5">
-          <Flame size={12} className="text-brand" />
-          <span className="tabular">
-            {todaysLogs && todaysLogs.length > 0
-              ? `${todaysLogs.filter((l) => (l.sets ?? []).some((s) => s.completed)).length}`
-              : "0"}{" "}
-            logged today
+      {/* Sessions logged */}
+      <div className="card p-2.5 mt-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Flame size={16} className="text-brand" />
+          <span className="text-[10px] uppercase tracking-wider text-ink-muted">
+            Sessions logged today
           </span>
         </div>
-        <span>
-          Phase {day?.phase ?? 1}/3 ·{" "}
-          <span className="text-ink">{phaseShort(day?.phase ?? 1)}</span>
-        </span>
+        <div className="display text-2xl font-bold leading-none tabular">
+          {todaysLogs && todaysLogs.length > 0
+            ? todaysLogs.filter((l) =>
+                (l.sets ?? []).some((s) => s.completed),
+              ).length
+            : 0}
+        </div>
       </div>
     </div>
   );

@@ -35,6 +35,30 @@ export const listWeek = query({
  * Idempotent seed — wipes programDays and reseeds from programData.ts.
  * Call with: npx convex run programDays:seed
  */
+/**
+ * Rename a workout. The new title is persisted on the programDays row
+ * itself so it survives reloads, but is overwritten on next seed —
+ * which is the right behavior, since the seed represents the source
+ * program and renames are user customizations.
+ */
+export const updateTitle = mutation({
+  args: {
+    week: v.number(),
+    dayOfWeek: v.number(),
+    title: v.string(),
+  },
+  handler: async (ctx, { week, dayOfWeek, title }) => {
+    const day = await ctx.db
+      .query("programDays")
+      .withIndex("by_week_day", (q) =>
+        q.eq("week", week).eq("dayOfWeek", dayOfWeek),
+      )
+      .unique();
+    if (!day) return;
+    await ctx.db.patch(day._id, { title: title.trim() || day.title });
+  },
+});
+
 export const seed = mutation({
   args: {},
   handler: async (ctx) => {

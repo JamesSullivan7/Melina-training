@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Heart } from "lucide-react";
-import { useQuery } from "convex/react";
+import { ArrowLeft, CheckCircle2, Heart, Pencil, Check, X } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import type { Exercise, Section as ProgramSection } from "@/convex/types";
@@ -92,9 +92,11 @@ export function WorkoutView({
           <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
             Week {day.week} · Day {day.dayOfWeek}
           </span>
-          <h1 className="display text-2xl font-bold leading-tight">
-            {day.title}
-          </h1>
+          <EditableTitle
+            week={day.week}
+            dayOfWeek={day.dayOfWeek}
+            title={day.title}
+          />
         </div>
         <div className="display text-base font-bold tabular-nums shrink-0">
           {Math.round(overallPct * 100)}%
@@ -262,6 +264,93 @@ function SectionBlock({
         ))}
       </div>
     </section>
+  );
+}
+
+function EditableTitle({
+  week,
+  dayOfWeek,
+  title,
+}: {
+  week: number;
+  dayOfWeek: number;
+  title: string;
+}) {
+  const updateTitle = useMutation(api.programDays.updateTitle);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(title);
+  const [saving, setSaving] = useState(false);
+
+  async function save() {
+    const next = draft.trim();
+    if (!next || next === title) {
+      setEditing(false);
+      setDraft(title);
+      return;
+    }
+    setSaving(true);
+    await updateTitle({ week, dayOfWeek, title: next });
+    setSaving(false);
+    setEditing(false);
+  }
+
+  function cancel() {
+    setDraft(title);
+    setEditing(false);
+  }
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1 mt-0.5">
+        <input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") save();
+            if (e.key === "Escape") cancel();
+          }}
+          className="display text-2xl font-bold leading-tight bg-bg-elev border border-bg-line rounded px-2 py-0.5 flex-1 min-w-0 focus:outline-none focus:border-brand"
+          disabled={saving}
+        />
+        <button
+          type="button"
+          onClick={save}
+          disabled={saving}
+          className="h-8 w-8 rounded-lg flex items-center justify-center bg-brand text-white tap disabled:opacity-40"
+          aria-label="Save title"
+        >
+          <Check size={16} strokeWidth={3} />
+        </button>
+        <button
+          type="button"
+          onClick={cancel}
+          disabled={saving}
+          className="h-8 w-8 rounded-lg flex items-center justify-center bg-bg-elev text-ink-muted tap"
+          aria-label="Cancel"
+        >
+          <X size={16} />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        setDraft(title);
+        setEditing(true);
+      }}
+      className="flex items-center gap-1.5 text-left tap group"
+      aria-label="Rename workout"
+    >
+      <h1 className="display text-2xl font-bold leading-tight">{title}</h1>
+      <Pencil
+        size={12}
+        className="text-ink-dim group-hover:text-ink-muted transition-colors shrink-0"
+      />
+    </button>
   );
 }
 
