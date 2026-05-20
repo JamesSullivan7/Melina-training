@@ -67,7 +67,7 @@ function carry(
   return { id, name, prescription, trackingType: "carry_distance", pairGroup };
 }
 
-/** Distance-based conditioning (rower meters, ski erg meters, sled meters). */
+/** Distance-based conditioning (rower meters, run meters, sled meters). */
 function dist(
   id: string,
   name: string,
@@ -157,8 +157,8 @@ const WEEK_1: ProgramDay[] = [
       note: "Zone 2 aerobic rebuilding. Conversational pace. HR ~120–140.",
       exercises: [
         dur(
-          "assault-bike-intervals",
-          "Assault Bike Intervals",
+          "running-intervals",
+          "Running Intervals",
           "13 rounds · 60 sec moderate / 30 sec easy",
         ),
       ],
@@ -300,7 +300,7 @@ const WEEK_1: ProgramDay[] = [
       rounds: 4,
       note: "Mixed-modal conditioning. Sustainable output.",
       exercises: [
-        dist("ski-erg", "Ski Erg", "250m"),
+        dist("run", "Run", "400m"),
         carry("farmer-carry", "Farmer Carry", "40m"),
         cal("assault-bike", "Assault Bike", "12 cal"),
         dur("recovery-walk", "Walking Recovery", "60 sec"),
@@ -394,7 +394,7 @@ const WEEK_5: ProgramDay[] = [
       duration: "20 min",
       note: "Steady sustainable aerobic output.",
       exercises: [
-        dur("assault-bike-tempo", "Assault Bike Tempo", "4 min moderate / 1 min easy × 4 rounds"),
+        dur("running-tempo", "Running Tempo", "5 min moderate / 1 min easy × 4 rounds"),
       ],
     },
     cooldown: {
@@ -421,7 +421,7 @@ const WEEK_5: ProgramDay[] = [
       duration: "20 min",
       rounds: 5,
       exercises: [
-        dist("ski-erg", "Ski Erg", "300m"),
+        dist("run", "Run", "300m"),
         dist("sled-push", "Sled Push", "25m"),
         ms("trx-row", "TRX Row", "15 reps"),
         ms("kb-deadlift", "KB Deadlift", "15 reps"),
@@ -500,7 +500,7 @@ const WEEK_5: ProgramDay[] = [
       duration: "18 min",
       note: "Sustainable movement flow, not all-out.",
       exercises: [
-        dur("continuous-rotation", "Continuous Rotation", "Bike · Carry · Ski Erg · Walking recovery"),
+        dur("continuous-rotation", "Continuous Rotation", "Bike · Carry · Run · Walking recovery"),
       ],
     },
     cooldown: {
@@ -582,7 +582,7 @@ const WEEK_9: ProgramDay[] = [
     conditioningBlock: {
       duration: "24 min",
       exercises: [
-        dur("tempo-conditioning", "Tempo Conditioning", "5 min moderate / 1 min easy × 4 rounds"),
+        dur("running-intervals", "Running Intervals", "10 rounds · 90 sec hard / 45 sec easy"),
       ],
     },
     cooldown: {
@@ -674,7 +674,7 @@ const WEEK_9: ProgramDay[] = [
         ms("rotational-landmine-clean", "Rotational Landmine Clean", "6/side"),
         ms("split-squat", "Split Squat", "10 reps"),
         carry("farmer-carry", "Farmer Carry", "60m"),
-        dist("ski-erg", "Ski Erg", "300m"),
+        dist("run", "Run", "300m"),
       ],
     },
     conditioningBlock: {
@@ -711,7 +711,7 @@ const WEEK_9: ProgramDay[] = [
       note: "Sustained high-output conditioning. NOT self-destruction.",
       exercises: [
         cal("assault-bike", "Assault Bike", "rotating"),
-        dist("ski-erg", "Ski Erg", "rotating"),
+        dist("run", "Run", "rotating"),
         dist("rower", "Row", "rotating"),
         carry("walking-carry", "Walking Carry", "rotating"),
         dist("sled-push", "Sled Push", "rotating"),
@@ -729,58 +729,182 @@ const WEEK_9: ProgramDay[] = [
 // PROGRESSION OVERLAYS — non-anchor weeks
 // ────────────────────────────────────────────────────────────────
 
+/**
+ * Per-week conditioning overrides for non-anchor weeks. Distributes
+ * cardio across the 12-week program: 50% running, 25% biking, 25% rowing.
+ * When a week+day has an entry here, it replaces the anchor's
+ * conditioningBlock for that day. Days without entries inherit the anchor.
+ */
+const CARDIO_BY_WEEK: Record<number, Record<number, Section>> = {
+  2: {
+    1: {
+      duration: "20 min",
+      note: "Tempo running — sustained moderate effort.",
+      exercises: [
+        dur("running-tempo", "Running Tempo", "4 rounds · 4 min moderate / 1 min easy"),
+      ],
+    },
+    2: {
+      duration: "24 min",
+      note: "Bike threshold — sustainable discomfort, NOT sprinting.",
+      exercises: [
+        dur("bike-threshold", "Assault Bike Threshold", "6 rounds · 90 sec hard / 60 sec easy"),
+      ],
+    },
+  },
+  3: {
+    1: {
+      duration: "20 min",
+      note: "Hill repeats — power and lactate tolerance.",
+      exercises: [
+        dur("running-hill-repeats", "Hill Repeats", "10 rounds · 45 sec hard uphill / walk back recovery"),
+      ],
+    },
+  },
+  4: {
+    1: {
+      duration: "25 min",
+      note: "Zone 2 aerobic — conversational pace. HR 130–145.",
+      exercises: [
+        dur("running-zone-2", "Zone 2 Run", "25 min steady · conversational"),
+      ],
+    },
+    2: {
+      duration: "20 min",
+      note: "Bike intervals — short bursts.",
+      exercises: [
+        dur("bike-intervals", "Assault Bike Intervals", "8 rounds · 60 sec hard / 30 sec easy"),
+      ],
+    },
+  },
+  6: {
+    1: {
+      duration: "20 min",
+      note: "Short interval pacing — repeatable output.",
+      exercises: [
+        dur("running-intervals", "Running Intervals", "12 rounds · 75 sec moderate / 30 sec easy"),
+      ],
+    },
+    2: {
+      duration: "20 min",
+      note: "Bike tempo — sustained moderate effort.",
+      exercises: [
+        dur("bike-tempo", "Assault Bike Tempo", "4 rounds · 4 min moderate / 1 min easy"),
+      ],
+    },
+  },
+  7: {
+    1: {
+      duration: "20 min",
+      note: "Fartlek — varied pacing surges.",
+      exercises: [
+        dur("running-fartlek", "Running Fartlek", "20 min · alternate 1 min surge / 2 min easy"),
+      ],
+    },
+  },
+  8: {
+    1: {
+      duration: "30 min",
+      note: "Zone 2 aerobic — long steady run. HR 130–145.",
+      exercises: [
+        dur("running-zone-2", "Zone 2 Run", "30 min steady · conversational"),
+      ],
+    },
+    2: {
+      duration: "22 min",
+      note: "Bike threshold — sustained hard effort.",
+      exercises: [
+        dur("bike-threshold", "Assault Bike Threshold", "5 rounds · 3 min hard / 1 min easy"),
+      ],
+    },
+  },
+  10: {
+    1: {
+      duration: "22 min",
+      note: "Pyramid intervals — build then descend.",
+      exercises: [
+        dur("running-pyramid", "Running Pyramid Intervals", "1 / 2 / 3 / 2 / 1 min hard · 1 min easy between"),
+      ],
+    },
+    2: {
+      duration: "22 min",
+      note: "Bike intervals — repeat-effort capacity under fatigue.",
+      exercises: [
+        dur("bike-intervals", "Assault Bike Intervals", "10 rounds · 60 sec hard / 30 sec easy"),
+      ],
+    },
+  },
+  11: {
+    1: {
+      duration: "22 min",
+      note: "Hill repeats — late-cycle power.",
+      exercises: [
+        dur("running-hill-repeats", "Hill Repeats", "12 rounds · 60 sec hard uphill / walk back recovery"),
+      ],
+    },
+  },
+  12: {
+    1: {
+      duration: "22 min",
+      note: "Tempo running — race-pace consolidation.",
+      exercises: [
+        dur("running-tempo", "Running Tempo", "4 rounds · 5 min moderate / 1 min easy"),
+      ],
+    },
+    2: {
+      duration: "22 min",
+      note: "Bike threshold — final phase capacity.",
+      exercises: [
+        dur("bike-threshold", "Assault Bike Threshold", "6 rounds · 90 sec hard / 30 sec easy"),
+      ],
+    },
+  },
+};
+
 const ADJUSTMENTS: Record<number, string[]> = {
   2: [
     "Add 1 set to all carries",
-    "Bike intervals → 75 sec work / 30 sec easy",
-    "Row threshold → 2:15 hard / 1:45 easy",
     "Slightly longer sled pushes",
-    "Introduce controlled run: 30 sec jog / 90 sec walk × 6",
   ],
   3: [
     "Add landmine rotations to main block",
     "Add offset carries (contralateral loading)",
-    "Row intervals → 3 min hard / 2 min easy",
-    "Run progression: 45 sec jog / 75 sec walk × 8",
   ],
   4: [
     "Phase bridge week — prep for Phase 2 density",
     "Add crawling intervals",
     "Dynamic carries",
-    "Friday: 20-min mixed modal — Ski Erg 300m · Carry 50m · Bike 15 cal · Sled 25m · 60 sec walk",
+    "Friday: 20-min mixed modal — Run 400m · Carry 50m · Bike 15 cal · Sled 25m · 60 sec walk",
   ],
   6: [
     "Increased interval density",
     "Longer carries",
     "More threshold exposure",
-    "Run progression: 60 sec jog / 60 sec walk × 10",
   ],
   7: [
     "Contralateral loading throughout",
     "Crawling transitions between rounds",
     "Dynamic movement sequencing",
-    "Threshold intervals → 4 min hard / 2 min easy",
     "Optional mini-deload: reduce conditioning volume 20%, hold movement quality",
   ],
   8: [
     "Phase bridge week — prep for Phase 3",
-    "Friday challenge: 5 rounds — Ski Erg 400m · Carry 60m · Bike 20 cal · Sled 30m · 45 sec walk",
+    "Friday challenge: 5 rounds — Run 500m · Carry 60m · Bike 20 cal · Sled 30m · 45 sec walk",
     "High sustainable output, not all-out",
   ],
   10: [
     "Faster transitions between modalities",
     "Longer intervals",
     "More athletic sequencing",
-    "Run progression: 90 sec jog / 45 sec walk × 10",
   ],
   11: [
     "Advanced hybrid development",
     "Focus: repeat-effort tolerance + threshold resilience + pacing under fatigue",
-    "Friday: 30-min hybrid rotation — Row · Ski · Bike · Carry · Sled · Crawling transitions",
+    "Friday: 30-min hybrid rotation — Row · Run · Bike · Carry · Sled · Crawling transitions",
   ],
   12: [
     "Performance consolidation week",
-    "Final Friday — HYBRID PERFORMANCE TEST: 5 rounds — Ski Erg 500m · Carry 80m · Bike 20 cal · Sled 40m · Row 300m · 60 sec walk",
+    "Final Friday — HYBRID PERFORMANCE TEST: 5 rounds — Run 600m · Carry 80m · Bike 20 cal · Sled 40m · Row 300m · 60 sec walk",
     "Demonstrate: conditioning · movement quality · pacing · work capacity · resilience",
     "Goal: sustainable performance, NOT self-destruction",
   ],
@@ -802,14 +926,18 @@ function progressionDays(week: number): ProgramDay[] {
   const anchorWeek = anchorFor(week);
   const anchor =
     anchorWeek === 1 ? WEEK_1 : anchorWeek === 5 ? WEEK_5 : WEEK_9;
-  return anchor.map((day) => ({
-    ...day,
-    week,
-    phase: phaseFor(week),
-    isAnchor: false,
-    anchorWeek,
-    adjustments: ADJUSTMENTS[week],
-  }));
+  return anchor.map((day) => {
+    const cardio = CARDIO_BY_WEEK[week]?.[day.dayOfWeek];
+    return {
+      ...day,
+      week,
+      phase: phaseFor(week),
+      isAnchor: false,
+      anchorWeek,
+      adjustments: ADJUSTMENTS[week],
+      conditioningBlock: cardio ?? day.conditioningBlock,
+    };
+  });
 }
 
 export const FULL_PROGRAM: ProgramDay[] = [
