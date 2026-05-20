@@ -59,6 +59,47 @@ export const updateTitle = mutation({
   },
 });
 
+const sectionKey = v.union(
+  v.literal("warmup"),
+  v.literal("mainBlock"),
+  v.literal("conditioningBlock"),
+  v.literal("cooldown"),
+);
+
+/**
+ * Rename a single exercise on a single day+section. Like updateTitle,
+ * the patch persists on the programDays row and is overwritten on the
+ * next seed (which is intended — seed is the source of truth, renames
+ * are user customizations).
+ */
+export const updateExerciseName = mutation({
+  args: {
+    week: v.number(),
+    dayOfWeek: v.number(),
+    section: sectionKey,
+    exerciseId: v.string(),
+    name: v.string(),
+  },
+  handler: async (ctx, { week, dayOfWeek, section, exerciseId, name }) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const day = await ctx.db
+      .query("programDays")
+      .withIndex("by_week_day", (q) =>
+        q.eq("week", week).eq("dayOfWeek", dayOfWeek),
+      )
+      .unique();
+    if (!day) return;
+    const sec = day[section];
+    const nextExercises = sec.exercises.map((ex) =>
+      ex.id === exerciseId ? { ...ex, name: trimmed } : ex,
+    );
+    await ctx.db.patch(day._id, {
+      [section]: { ...sec, exercises: nextExercises },
+    });
+  },
+});
+
 export const seed = mutation({
   args: {},
   handler: async (ctx) => {

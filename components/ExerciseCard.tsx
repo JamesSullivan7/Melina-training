@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, NotebookPen } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, NotebookPen, Pencil, X } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
@@ -9,6 +9,8 @@ import type { Exercise } from "@/convex/types";
 import { SetRow, type SetLog, type Units } from "./SetRow";
 import { RPEChip } from "./RPEChip";
 import { cx } from "@/lib/utils";
+
+type SectionKey = "warmup" | "mainBlock" | "conditioningBlock" | "cooldown";
 
 type Log = Doc<"exerciseLogs">;
 
@@ -47,6 +49,7 @@ function defaultSets(exercise: Exercise, prev?: Log): SetLog[] {
 
 export function ExerciseCard({
   exercise,
+  sectionKey,
   log,
   prevLog,
   date,
@@ -56,6 +59,7 @@ export function ExerciseCard({
   restSeconds = 90,
 }: {
   exercise: Exercise;
+  sectionKey: SectionKey;
   log: Log | null;
   prevLog: Log | null;
   date: string;
@@ -65,6 +69,7 @@ export function ExerciseCard({
   restSeconds?: number;
 }) {
   const upsert = useMutation(api.exerciseLogs.upsert);
+  const updateExerciseName = useMutation(api.programDays.updateExerciseName);
 
   // If there's no log yet for today, project the prescribed empty sets
   // (pre-filled with prev values as starting suggestions).
@@ -75,6 +80,33 @@ export function ExerciseCard({
 
   const [open, setOpen] = useState(true);
   const [showNotes, setShowNotes] = useState(!!notes);
+  const [renaming, setRenaming] = useState(false);
+  const [nameDraft, setNameDraft] = useState(exercise.name);
+  const [savingName, setSavingName] = useState(false);
+
+  async function saveName() {
+    const next = nameDraft.trim();
+    if (!next || next === exercise.name) {
+      setNameDraft(exercise.name);
+      setRenaming(false);
+      return;
+    }
+    setSavingName(true);
+    await updateExerciseName({
+      week,
+      dayOfWeek,
+      section: sectionKey,
+      exerciseId: exercise.id,
+      name: next,
+    });
+    setSavingName(false);
+    setRenaming(false);
+  }
+
+  function cancelRename() {
+    setNameDraft(exercise.name);
+    setRenaming(false);
+  }
 
   const completedSets = sets.filter((s) => s.completed).length;
   const totalSets = sets.length;
@@ -106,23 +138,69 @@ export function ExerciseCard({
 
   return (
     <div className="card overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-2 px-3 py-3 tap"
-      >
-        <div className="flex-1 text-left min-w-0">
+      <div className="flex items-center gap-2 px-3 py-3">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <h3 className="font-semibold text-ink leading-tight">
-              {exercise.name}
-            </h3>
-            {exercise.pairGroup && (
-              <span
-                className="chip border bg-brand/15 text-brand border-brand/30"
-                aria-label={`Pair group ${exercise.pairGroup}`}
-              >
-                {exercise.pairGroup}
-              </span>
+            {renaming ? (
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                <input
+                  autoFocus
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveName();
+                    if (e.key === "Escape") cancelRename();
+                  }}
+                  className="font-semibold text-ink leading-tight bg-bg-elev border border-bg-line rounded px-2 py-0.5 flex-1 min-w-0 focus:outline-none focus:border-brand"
+                  disabled={savingName}
+                />
+                <button
+                  type="button"
+                  onClick={saveName}
+                  disabled={savingName}
+                  className="h-7 w-7 rounded-lg flex items-center justify-center bg-brand text-white tap disabled:opacity-40"
+                  aria-label="Save name"
+                >
+                  <Check size={14} strokeWidth={3} />
+                </button>
+                <button
+                  type="button"
+                  onClick={cancelRename}
+                  disabled={savingName}
+                  className="h-7 w-7 rounded-lg flex items-center justify-center bg-bg-elev text-ink-muted tap"
+                  aria-label="Cancel rename"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNameDraft(exercise.name);
+                    setRenaming(true);
+                  }}
+                  className="flex items-center gap-1.5 text-left tap group"
+                  aria-label="Rename exercise"
+                >
+                  <h3 className="font-semibold text-ink leading-tight">
+                    {exercise.name}
+                  </h3>
+                  <Pencil
+                    size={11}
+                    className="text-ink-dim group-hover:text-ink-muted transition-colors shrink-0"
+                  />
+                </button>
+                {exercise.pairGroup && (
+                  <span
+                    className="chip border bg-brand/15 text-brand border-brand/30"
+                    aria-label={`Pair group ${exercise.pairGroup}`}
+                  >
+                    {exercise.pairGroup}
+                  </span>
+                )}
+              </>
             )}
           </div>
           <div className="mt-0.5 flex items-center gap-2 text-xs text-ink-muted flex-wrap">
@@ -138,15 +216,22 @@ export function ExerciseCard({
             )}
           </div>
         </div>
-        <div className="text-xs text-ink-muted tabular-nums">
-          {completedSets}/{totalSets}
-        </div>
-        {open ? (
-          <ChevronUp size={18} className="text-ink-muted" />
-        ) : (
-          <ChevronDown size={18} className="text-ink-muted" />
-        )}
-      </button>
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="flex items-center gap-1.5 px-1 py-1 tap"
+          aria-label={open ? "Collapse exercise" : "Expand exercise"}
+        >
+          <span className="text-xs text-ink-muted tabular-nums">
+            {completedSets}/{totalSets}
+          </span>
+          {open ? (
+            <ChevronUp size={18} className="text-ink-muted" />
+          ) : (
+            <ChevronDown size={18} className="text-ink-muted" />
+          )}
+        </button>
+      </div>
 
       {open && (
         <div className="px-3 pb-3 space-y-1.5">

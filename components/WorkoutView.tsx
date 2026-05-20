@@ -164,6 +164,7 @@ export function WorkoutView({
           return (
             <SectionBlock
               key={key}
+              sectionKey={key}
               label={SECTION_LABELS[key]}
               section={sec}
               date={dateISO}
@@ -238,6 +239,7 @@ function CompleteButton({
 }
 
 function SectionBlock({
+  sectionKey,
   label,
   section,
   date,
@@ -246,6 +248,7 @@ function SectionBlock({
   logByExId,
   prevByExId,
 }: {
+  sectionKey: (typeof SECTION_KEYS)[number];
   label: string;
   section: ProgramSection;
   date: string;
@@ -299,6 +302,7 @@ function SectionBlock({
           <ExerciseCard
             key={`${ex.id}-${i}`}
             exercise={ex}
+            sectionKey={sectionKey}
             log={logByExId.get(ex.id) ?? null}
             prevLog={prevByExId.get(ex.id) ?? null}
             restSeconds={section.restSeconds ?? 90}
